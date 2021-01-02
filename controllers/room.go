@@ -13,8 +13,7 @@ import (
 type contextKey struct{}
 
 var (
-	ContextKeyRoom   = contextKey{}
-	ContextKeyNotice = contextKey{}
+	ContextKeyRoom = contextKey{}
 )
 
 type RoomsController struct{}
