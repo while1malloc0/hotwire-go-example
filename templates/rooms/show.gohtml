@@ -1,24 +1,4 @@
-<!-- <turbo-stream action="append" target="room">
-</turbo-stream> -->
-<!-- <%= turbo_stream_from @room %> -->
-
-
-<!-- <%= turbo_frame_tag "room" do %>
-  
-  <%= render @room %>
-
-  <p>
-    <%= link_to 'Edit', edit_room_path(@room) %> |
-    <%= link_to 'Back', rooms_path, "data-turbo-frame": "_top" %>
-  </p>
-<% end %>
-
-<div id="messages">
-  <%= render @room.messages %>
-</div>
-
-<%= turbo_frame_tag "new_message", src: new_room_message_path(@room), target: "_top" %> -->
-<turbo-stream-websocket-source src="ws://localhost:8080/rooms/{{.Room.ID}}/messages/socket"></turbo-stream-websocket-source>
+<turbo-stream-websocket-source src="/rooms/{{.Room.ID}}/messages/socket"></turbo-stream-websocket-source>
 
 <turbo-frame id="room">
   {{ template "room" . }}

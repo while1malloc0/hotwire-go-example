@@ -31,7 +31,8 @@ export default class TurboStreamWebsocketSource extends HTMLElement {
   }
 
   setupWebsocket() {
-    let ws = new WebSocket(this.src);
+    let socketLocation = `ws://${window.location.host}${this.src}`
+    let ws = new WebSocket(socketLocation);
     ws.onmessage = (msg) => {
       this.dispatchMessageEvent(msg);
     };
