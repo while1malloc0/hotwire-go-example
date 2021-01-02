@@ -1,0 +1,11 @@
+{{ define "form" }}
+<div class="field">
+    <form action="/rooms/{{.Room.ID}}" method="post">
+        <label for="room[name]">Name</label>
+        <input type="text" name="room[name]">
+        <div class="actions">
+            <input type="submit" value="Update Room">
+        </div>
+    </form>
+</div>
+{{ end }}

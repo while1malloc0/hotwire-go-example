@@ -1,0 +1,8 @@
+<h1>Editing Room</h1>
+
+<turbo-frame id="room">
+    {{ template "form" . }}
+</turbo-frame>
+
+<a href="/rooms/{{ .Room.ID }}">Show</a> |
+<a href="/rooms">Back</a>

@@ -1,0 +1,22 @@
+{
+  "name": "hotwire-go-example",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@hotwired/turbo": "^7.0.0-beta.1",
+    "babel-loader": "^8.2.2"
+  },
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "copy-webpack-plugin": "^7.0.0",
+    "webpack": "^5.11.1",
+    "webpack-cli": "^4.3.0"
+  }
+}

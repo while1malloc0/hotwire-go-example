@@ -1,0 +1,27 @@
+<!-- <p id="notice"><%= notice %></p> -->
+
+<h1>Rooms</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+      {{ range .Rooms }}
+        <tr>
+            <td>{{ .Name }}</td>
+            <td><a href="rooms/{{ .ID }}">Show</a></td>
+            <td><a href="rooms/{{ .ID }}/edit">Edit</a></td>
+            <td><a href="rooms/{{ .ID }}/destroy">Destroy</a></td>
+        </tr>
+      {{ end }}
+  </tbody>
+</table>
+
+<br>
+
+<!-- <%= link_to 'New Room', new_room_path %> -->

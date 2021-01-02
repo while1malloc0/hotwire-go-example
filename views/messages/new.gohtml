@@ -1,0 +1,12 @@
+<h1>New Message</h1>
+
+<turbo-frame id="new_message" target="_top">
+    <form id="new-message-form" action="/rooms/1/messages" accept-charset="UTF-8" method="post"> 
+        <div class="field">
+            <input type="text" name="message[content]">
+            <input type="submit" value="Send">
+        </div>
+    </form>
+</turbo-frame>
+
+<a href="/rooms/{{.Room.ID}}">Back</a>
