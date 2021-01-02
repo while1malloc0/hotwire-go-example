@@ -1,4 +1,4 @@
-<!-- <p id="notice"><%= notice %></p> -->
+<p id="notice">{{ .Notice }}</p>
 
 <h1>Rooms</h1>
 
@@ -16,7 +16,7 @@
             <td>{{ .Name }}</td>
             <td><a href="rooms/{{ .ID }}">Show</a></td>
             <td><a href="rooms/{{ .ID }}/edit">Edit</a></td>
-            <td><a href="rooms/{{ .ID }}/destroy">Destroy</a></td>
+            <td><a href="rooms/{{ .ID }}/destroy" data-confirm="Are you sure?" rel="nofollow" data-method="delete">Destroy</a></td>
         </tr>
       {{ end }}
   </tbody>

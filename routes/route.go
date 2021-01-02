@@ -9,6 +9,7 @@ func Register(r chi.Router) {
 	roomsController := &controllers.RoomsController{}
 	messagesController := &controllers.MessagesController{}
 
+	r.Use(controllers.NoticeContext)
 	r.Get("/", roomsController.Index)
 
 	r.Route("/rooms", func(r chi.Router) {
@@ -23,6 +24,7 @@ func Register(r chi.Router) {
 			r.Post("/", roomsController.Update)
 
 			r.Get("/edit", roomsController.Edit)
+			r.Get("/destroy", roomsController.Destroy)
 
 			r.Route("/messages", func(r chi.Router) {
 				r.Post("/", messagesController.Create)

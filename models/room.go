@@ -48,3 +48,8 @@ func UpdateRoom(room *Room, updates map[string]interface{}) error {
 	tx := DB.First(room, room.ID).Updates(updates)
 	return tx.Error
 }
+
+func DeleteRoom(room *Room) error {
+	tx := DB.Delete(room)
+	return tx.Error
+}

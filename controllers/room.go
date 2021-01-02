@@ -12,7 +12,10 @@ import (
 
 type contextKey struct{}
 
-var ContextKeyRoom = contextKey{}
+var (
+	ContextKeyRoom   = contextKey{}
+	ContextKeyNotice = contextKey{}
+)
 
 type RoomsController struct{}
 
@@ -31,6 +34,7 @@ func (*RoomsController) Context(next http.Handler) http.Handler {
 			http.Error(w, fmt.Sprintf("Fatal error: %v", err), http.StatusInternalServerError)
 			return
 		}
+
 		ctx := context.WithValue(r.Context(), ContextKeyRoom, room)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -54,7 +58,8 @@ func (*RoomsController) Index(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	responseData := map[string]interface{}{"Rooms": rooms}
+	notice := r.Context().Value(ContextKeyNotice)
+	responseData := map[string]interface{}{"Rooms": rooms, "Notice": notice}
 	render.HTML(w, http.StatusOK, "rooms/index", responseData)
 }
 
@@ -89,6 +94,7 @@ func (*RoomsController) Update(w http.ResponseWriter, r *http.Request) {
 	err = models.UpdateRoom(room, updates)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/rooms/%d", room.ID), http.StatusFound)
@@ -98,16 +104,27 @@ func (*RoomsController) Create(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(1024)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	name := r.FormValue("room[name]")
 	err = models.CreateRoom(name)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
+	SetNotice(w, "Room created successfully")
 	http.Redirect(w, r, "/rooms", http.StatusFound)
 }
 
-// func (*RoomsController) Destroy(w http.ResponseWriter, r *http.Request) {
-// 	room := r.Context().Value()
-// }
+func (*RoomsController) Destroy(w http.ResponseWriter, r *http.Request) {
+	room := r.Context().Value(ContextKeyRoom).(*models.Room)
+	err := models.DeleteRoom(room)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	SetNotice(w, "Room deleted successfully")
+	http.Redirect(w, r, "/rooms", http.StatusFound)
+}
