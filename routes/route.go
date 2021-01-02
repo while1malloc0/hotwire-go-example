@@ -3,13 +3,14 @@ package routes
 import (
 	"github.com/go-chi/chi"
 	"github.com/while1malloc0/hotwire-go-example/controllers"
+	"github.com/while1malloc0/hotwire-go-example/pkg/notice"
 )
 
 func Register(r chi.Router) {
 	roomsController := &controllers.RoomsController{}
 	messagesController := &controllers.MessagesController{}
 
-	r.Use(controllers.NoticeContext)
+	r.Use(notice.Context)
 	r.Get("/", roomsController.Index)
 
 	r.Route("/rooms", func(r chi.Router) {

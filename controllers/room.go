@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/while1malloc0/hotwire-go-example/models"
+	"github.com/while1malloc0/hotwire-go-example/pkg/notice"
 )
 
 type contextKey struct{}
@@ -57,7 +58,7 @@ func (*RoomsController) Index(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	notice := r.Context().Value(ContextKeyNotice)
+	notice := r.Context().Value(notice.ContextKey)
 	responseData := map[string]interface{}{"Rooms": rooms, "Notice": notice}
 	render.HTML(w, http.StatusOK, "rooms/index", responseData)
 }
@@ -112,7 +113,7 @@ func (*RoomsController) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	SetNotice(w, "Room created successfully")
+	notice.Set(w, "Room created successfully")
 	http.Redirect(w, r, "/rooms", http.StatusFound)
 }
 
@@ -124,6 +125,6 @@ func (*RoomsController) Destroy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	SetNotice(w, "Room deleted successfully")
+	notice.Set(w, "Room deleted successfully")
 	http.Redirect(w, r, "/rooms", http.StatusFound)
 }
