@@ -58,6 +58,10 @@ func (*RoomsController) Index(w http.ResponseWriter, r *http.Request) {
 	render.HTML(w, http.StatusOK, "rooms/index", responseData)
 }
 
+func (*RoomsController) New(w http.ResponseWriter, r *http.Request) {
+	render.HTML(w, http.StatusOK, "rooms/new", nil)
+}
+
 func (*RoomsController) Edit(w http.ResponseWriter, r *http.Request) {
 	room := r.Context().Value(ContextKeyRoom).(*models.Room)
 	responseData := map[string]interface{}{"Room": room}
@@ -87,5 +91,9 @@ func (*RoomsController) Update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/rooms/%s", room.ID), http.StatusFound)
+	http.Redirect(w, r, fmt.Sprintf("/rooms/%d", room.ID), http.StatusFound)
 }
+
+// func (*RoomsController) Destroy(w http.ResponseWriter, r *http.Request) {
+// 	room := r.Context().Value()
+// }

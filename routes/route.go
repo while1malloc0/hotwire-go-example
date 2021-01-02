@@ -13,6 +13,7 @@ func Register(r chi.Router) {
 
 	r.Route("/rooms", func(r chi.Router) {
 		r.Get("/", roomsController.Index)
+		r.Get("/new", roomsController.New)
 
 		r.Route("/{id}", func(r chi.Router) {
 			r.Use(roomsController.Context)
