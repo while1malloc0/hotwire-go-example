@@ -16,3 +16,20 @@ func init() {
 		panic(err)
 	}
 }
+
+func Migrate() error {
+	return DB.AutoMigrate(Room{}, Message{})
+}
+
+func Seed() error {
+	if tx := DB.Raw("DELETE FROM rooms;"); tx.Error != nil {
+		return tx.Error
+	}
+	if tx := DB.Raw("DELETE FROM messages;"); tx.Error != nil {
+		return tx.Error
+	}
+	if tx := DB.Create(&Room{Name: "Test Room"}); tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
