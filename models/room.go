@@ -11,6 +11,11 @@ type Room struct {
 	Messages []Message
 }
 
+func CreateRoom(name string) error {
+	tx := DB.Create(&Room{Name: name})
+	return tx.Error
+}
+
 func FindRoom(id uint64) (*Room, error) {
 	var room Room
 	tx := DB.First(&room, id)

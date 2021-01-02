@@ -94,6 +94,20 @@ func (*RoomsController) Update(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/rooms/%d", room.ID), http.StatusFound)
 }
 
+func (*RoomsController) Create(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(1024)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	name := r.FormValue("room[name]")
+	err = models.CreateRoom(name)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	http.Redirect(w, r, "/rooms", http.StatusFound)
+}
+
 // func (*RoomsController) Destroy(w http.ResponseWriter, r *http.Request) {
 // 	room := r.Context().Value()
 // }
