@@ -1,5 +1,5 @@
 {{ define "message" }}
 <p id="messages_{{.ID}}">
-    {{ .CreatedAt }}: {{ .Content }}
+    {{ .CreatedAt | prettyTime }}: {{ .Content }}
 </p>
 {{ end }}
