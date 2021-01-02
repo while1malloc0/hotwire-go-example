@@ -18,24 +18,34 @@ type RoomsController struct{}
 
 func (*RoomsController) Context(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-		idStr := chi.URLParam(r, "id")
-		if idStr != "" {
-			id, err := strconv.ParseUint(idStr, 10, 64)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-			}
-			room, err := models.FindRoom(id)
-			if err != nil {
-				if models.IsRecordNotFound(err) {
-					http.Error(w, fmt.Sprintf("Room %d not found", id), http.StatusNotFound)
-				}
-				http.Error(w, fmt.Sprintf("Fatal server err %v", err), http.StatusInternalServerError)
-			}
-			ctx = context.WithValue(r.Context(), ContextKeyRoom, room)
+		var room *models.Room
+		var err error
+		if idStr := chi.URLParam(r, "id"); idStr != "" {
+			room, err = roomFromIDString(idStr)
 		}
+		if models.IsRecordNotFound(err) {
+			http.Error(w, "Room not found", http.StatusNotFound)
+			return
+		}
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Fatal error: %v", err), http.StatusInternalServerError)
+			return
+		}
+		ctx := context.WithValue(r.Context(), ContextKeyRoom, room)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func roomFromIDString(idStr string) (*models.Room, error) {
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	room, err := models.FindRoom(id)
+	if err != nil {
+		return nil, err
+	}
+	return room, nil
 }
 
 func (*RoomsController) Index(w http.ResponseWriter, r *http.Request) {
