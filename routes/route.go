@@ -30,8 +30,4 @@ func Register(r chi.Router) {
 			})
 		})
 	})
-
-	r.Route("/messages", func(r chi.Router) {
-		r.Get("/socket", messagesController.Socket)
-	})
 }

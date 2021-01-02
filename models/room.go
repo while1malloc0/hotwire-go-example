@@ -13,7 +13,7 @@ type Room struct {
 
 func FindRoom(id uint64) (*Room, error) {
 	var room Room
-	tx := DB.Find(&room)
+	tx := DB.First(&room, id)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
@@ -39,7 +39,7 @@ func ListRooms() ([]*Room, error) {
 	return rooms, nil
 }
 
-func UpdateRoom(id string, updates map[string]interface{}) error {
-	tx := DB.First(&Room{}, id).Updates(updates)
+func UpdateRoom(room *Room, updates map[string]interface{}) error {
+	tx := DB.First(room, room.ID).Updates(updates)
 	return tx.Error
 }

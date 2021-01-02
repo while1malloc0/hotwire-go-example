@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -19,6 +21,10 @@ func init() {
 
 func Migrate() error {
 	return DB.AutoMigrate(Room{}, Message{})
+}
+
+func IsRecordNotFound(err error) bool {
+	return errors.Is(err, gorm.ErrRecordNotFound)
 }
 
 func Seed() error {
