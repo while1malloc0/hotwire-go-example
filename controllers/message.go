@@ -9,8 +9,6 @@ import (
 	"nhooyr.io/websocket"
 )
 
-var messageSocketChan = make(chan []byte)
-
 type MessagesController struct{}
 
 func (*MessagesController) New(w http.ResponseWriter, r *http.Request) {
