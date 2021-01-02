@@ -62,18 +62,30 @@ func CreateMessage(w http.ResponseWriter, r *http.Request) {
 	messageSocketChan <- content.Bytes()
 }
 
+var started bool
+var wss []*websocket.Conn
+
 func MessageSocket(w http.ResponseWriter, r *http.Request) {
 	ws, err := websocket.Accept(w, r, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer ws.Close(websocket.StatusInternalError, "")
+	wss = append(wss, ws)
 
+	if !started {
+		go listenWs()
+		started = true
+	}
+}
+
+func listenWs() {
 	for {
 		select {
 		case content := <-messageSocketChan:
-			ws.Write(context.TODO(), websocket.MessageText, content)
+			for i := range wss {
+				wss[i].Write(context.TODO(), websocket.MessageText, content)
+			}
 		}
 	}
 }
