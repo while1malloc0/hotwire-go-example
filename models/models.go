@@ -22,14 +22,12 @@ func Migrate() error {
 }
 
 func Seed() error {
-	if tx := DB.Raw("DELETE FROM rooms;"); tx.Error != nil {
-		return tx.Error
-	}
-	if tx := DB.Raw("DELETE FROM messages;"); tx.Error != nil {
-		return tx.Error
-	}
-	if tx := DB.Create(&Room{Name: "Test Room"}); tx.Error != nil {
-		return tx.Error
+	var room Room
+	testRoomName := "Test Room"
+	if DB.Where(&Room{Name: testRoomName}).First(&room); room.ID == 0 {
+		if tx := DB.Create(&Room{Name: testRoomName}); tx.Error != nil {
+			return tx.Error
+		}
 	}
 	return nil
 }
