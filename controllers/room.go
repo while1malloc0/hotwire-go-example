@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/while1malloc0/hotwire-go-example/models"
-	"github.com/while1malloc0/hotwire-go-example/pkg/view"
 )
 
 type RoomsIndexResponse struct {
@@ -28,18 +27,7 @@ func RoomsIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := view.Render("rooms/index", RoomsIndexResponse{Rooms: rooms})
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	_, err = w.Write(response)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(200)
+	render.HTML(w, http.StatusOK, "rooms/index", RoomsIndexResponse{Rooms: rooms})
 }
 
 func EditRoom(w http.ResponseWriter, r *http.Request) {
@@ -51,19 +39,7 @@ func EditRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	content, err := view.Render("rooms/edit", EditRoomResponse{Room: room})
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	_, err = w.Write(content)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(200)
+	render.HTML(w, http.StatusOK, "rooms/edit", EditRoomResponse{Room: room})
 }
 
 func GetRoom(w http.ResponseWriter, r *http.Request) {
@@ -73,18 +49,7 @@ func GetRoom(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	content, err := view.Render("rooms/show", GetRoomResponse{Room: room})
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	_, err = w.Write(content)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-	w.WriteHeader(200)
+	render.HTML(w, http.StatusOK, "rooms/show", GetRoomResponse{Room: room})
 }
 
 func UpdateRoom(w http.ResponseWriter, r *http.Request) {

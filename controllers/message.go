@@ -1,13 +1,13 @@
 package controllers
 
 import (
+	"bytes"
 	"context"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi"
 	"github.com/while1malloc0/hotwire-go-example/models"
-	"github.com/while1malloc0/hotwire-go-example/pkg/view"
 	"nhooyr.io/websocket"
 )
 
@@ -27,17 +27,7 @@ func NewMessage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-
-	content, err := view.Render("messages/new", NewMessageResponseData{Room: room})
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-
-	_, err = w.Write(content)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-	w.WriteHeader(200)
+	render.HTML(w, http.StatusOK, "messages/new", NewMessageResponseData{Room: room})
 }
 
 func CreateMessage(w http.ResponseWriter, r *http.Request) {
@@ -64,12 +54,12 @@ func CreateMessage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Add("Content-Type", "text/html; turbo-stream; charset=utf-8")
-	content, err := view.Render("messages/create.turbostream", CreateMessageResponseData{Message: message})
+	var content bytes.Buffer
+	err = render.HTML(&content, http.StatusCreated, "messages/create.turbostream", CreateMessageResponseData{Message: message})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	messageSocketChan <- content
-	w.WriteHeader(201)
+	messageSocketChan <- content.Bytes()
 }
 
 func MessageSocket(w http.ResponseWriter, r *http.Request) {

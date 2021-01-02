@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/while1malloc0/hotwire-go-example/controllers"
 	"github.com/while1malloc0/hotwire-go-example/models"
+	"github.com/while1malloc0/hotwire-go-example/routes"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -28,24 +28,32 @@ func main() {
 	}
 	db.Create(&models.Room{Name: "Test Room"})
 
+	log.Print("Registering routes")
+	router := registerRoutes()
+
+	log.Print("Serving on port 8080")
+	if err := http.ListenAndServe(":8080", router); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func registerRoutes() http.Handler {
 	r := chi.NewMux()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-
-	r.Get("/messages/socket", controllers.MessageSocket)
-
-	r.Get("/", controllers.RoomsIndex)
-	r.Get("/rooms", controllers.RoomsIndex)
-	r.Get("/rooms/{id}", controllers.GetRoom)
-	r.Post("/rooms/{id}", controllers.UpdateRoom)
-	r.Get("/rooms/{id}/edit", controllers.EditRoom)
-	r.Get("/rooms/{id}/messages/new", controllers.NewMessage)
-	r.Post("/rooms/{id}/messages", controllers.CreateMessage)
+	routes.Register(r)
 
 	r.Handle("/public/*", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
 
-	log.Print("Serving on port 8080")
-	if err := http.ListenAndServe(":8080", r); err != nil {
-		log.Fatal(err)
-	}
+	logRoutes(r)
+
+	return r
+}
+
+func logRoutes(r chi.Router) {
+	log.Println("Serving with routes")
+	chi.Walk(r, func(method, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
+		log.Println(method, route)
+		return nil
+	})
 }
