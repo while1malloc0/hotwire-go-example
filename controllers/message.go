@@ -4,47 +4,35 @@ import (
 	"bytes"
 	"context"
 	"net/http"
-	"strconv"
 
-	"github.com/go-chi/chi"
 	"github.com/while1malloc0/hotwire-go-example/models"
 	"nhooyr.io/websocket"
 )
 
 var messageSocketChan = make(chan []byte)
 
-type NewMessageResponseData struct {
-	Room *models.Room
-}
+type MessagesController struct{}
 
-type CreateMessageResponseData struct {
-	Message *models.Message
-}
-
-func NewMessage(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+func (*MessagesController) New(w http.ResponseWriter, r *http.Request) {
+	id := r.Context().Value(ContextKeyRoomID).(uint64)
 	room, err := models.FindRoom(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	render.HTML(w, http.StatusOK, "messages/new", NewMessageResponseData{Room: room})
+	responseData := map[string]interface{}{"Room": room}
+	render.HTML(w, http.StatusOK, "messages/new", responseData)
 }
 
-func CreateMessage(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
+func (*MessagesController) Create(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(1024)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	err = r.ParseMultipartForm(1024)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-
+	roomID := r.Context().Value(ContextKeyRoomID).(uint64)
 	message := &models.Message{
 		Content: r.FormValue("message[content]"),
-		RoomID:  id,
+		RoomID:  int(roomID),
 	}
 
 	err = models.CreateMessage(message)
@@ -55,17 +43,19 @@ func CreateMessage(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("Content-Type", "text/html; turbo-stream; charset=utf-8")
 	var content bytes.Buffer
-	err = render.HTML(&content, http.StatusCreated, "messages/create.turbostream", CreateMessageResponseData{Message: message})
+	responseData := map[string]interface{}{"Message": message}
+	err = render.HTML(&content, http.StatusCreated, "messages/create.turbostream", responseData)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+
 	messageSocketChan <- content.Bytes()
 }
 
 var started bool
 var wss []*websocket.Conn
 
-func MessageSocket(w http.ResponseWriter, r *http.Request) {
+func (*MessagesController) Socket(w http.ResponseWriter, r *http.Request) {
 	ws, err := websocket.Accept(w, r, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

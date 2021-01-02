@@ -6,20 +6,32 @@ import (
 )
 
 func Register(r chi.Router) {
-	r.Get("/", controllers.RoomsIndex)
-	r.Route("/rooms", func(r chi.Router) {
-		r.Get("/", controllers.RoomsIndex)
-		r.Get("/{id}", controllers.GetRoom)
-		r.Get("/{id}/edit", controllers.EditRoom)
-		r.Post("/{id}", controllers.UpdateRoom)
+	roomsController := &controllers.RoomsController{}
+	messagesController := &controllers.MessagesController{}
 
-		r.Route("/{id}/messages", func(r chi.Router) {
-			r.Get("/new", controllers.NewMessage)
-			r.Post("/", controllers.CreateMessage)
+	r.Get("/", roomsController.Index)
+
+	r.Route("/rooms", func(r chi.Router) {
+		r.Get("/", roomsController.Index)
+
+		r.Route("/{id}", func(r chi.Router) {
+			r.Use(roomsController.Context)
+
+			r.Get("/", roomsController.Get)
+			r.Post("/", roomsController.Update)
+
+			r.Get("/edit", roomsController.Edit)
+
+			r.Route("/messages", func(r chi.Router) {
+				r.Post("/", messagesController.Create)
+
+				r.Get("/new", messagesController.New)
+				r.Get("/socket", messagesController.Socket)
+			})
 		})
 	})
 
 	r.Route("/messages", func(r chi.Router) {
-		r.Get("/socket", controllers.MessageSocket)
+		r.Get("/socket", messagesController.Socket)
 	})
 }

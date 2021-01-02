@@ -1,8 +1,6 @@
 package models
 
 import (
-	"strconv"
-
 	"gorm.io/gorm"
 )
 
@@ -13,13 +11,8 @@ type Room struct {
 	Messages []Message
 }
 
-func FindRoom(idStr string) (*Room, error) {
+func FindRoom(id uint64) (*Room, error) {
 	var room Room
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		return nil, err
-	}
-	room.ID = uint(id)
 	tx := DB.Find(&room)
 	if tx.Error != nil {
 		return nil, tx.Error

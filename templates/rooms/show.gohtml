@@ -18,7 +18,7 @@
 </div>
 
 <%= turbo_frame_tag "new_message", src: new_room_message_path(@room), target: "_top" %> -->
-<turbo-stream-websocket-source src="ws://localhost:8080/messages/socket"></turbo-stream-websocket-source>
+<turbo-stream-websocket-source src="ws://localhost:8080/rooms/{{.Room.ID}}/messages/socket"></turbo-stream-websocket-source>
 
 <turbo-frame id="room">
   {{ template "room" . }}
