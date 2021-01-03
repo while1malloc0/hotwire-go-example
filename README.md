@@ -14,7 +14,7 @@ See the main [Hotwire](https://hotwire.dev) for more information about Hotwire.
 
 #### Automatic
 
-Run `./scripts/setup.sh` to setup the project.
+Run `./scripts/setup.sh`.
 
 #### Manual
 
