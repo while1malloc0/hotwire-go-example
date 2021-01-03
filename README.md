@@ -1,7 +1,7 @@
 # Hotwire Go Example
 
 This is a recreation of the [Hotwire Rails Demo Chat](https://github.com/hotwired/hotwire-rails-demo-chat) with a Go backend.
-See the main [Hotwire](https://hotwire.dev) for more information about Hotwire.
+See the [Hotwire docs](https://hotwire.dev) for more information about Hotwire.
 
 ## Quickstart
 
