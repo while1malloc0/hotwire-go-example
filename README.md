@@ -46,7 +46,7 @@ In addition, the `pkg` directory contains a few purpose-built packages that mimi
 
 ## Notable differences from the Rails demo
 
-* The Rails demo uses a Stimulus controller to do form resetting when submitting a new chat message.
+* The Rails demo uses a [Stimulus controller](https://stimulus.hotwire.dev) to do form resetting when submitting a new chat message.
 While Stimulus is a great framework, in Go it's generally idiomatic to reimplement small pieces of functionality instead of adding a new dependency, and because the reset controller functionality is easily implemented in pure Javascript, it felt more idiomatic to leave Stimulus out in this case.
 * [Turbo Rails](https://github.com/hotwired/turbo-rails), and the Rails example by extension, relies heavily on `ActionCable` to connect Turbo Streams to a websocket.
 Because there is no ActionCable equivalent in Go, this example uses an in-memory pubsub mechanism and a `TurboStreamWebsocketSource` [custom element](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) to mimic the same functionality.
