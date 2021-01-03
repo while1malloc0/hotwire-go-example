@@ -9,14 +9,17 @@ import (
 	"nhooyr.io/websocket"
 )
 
+// MessagesController implements Controller functionality for the Message model
 type MessagesController struct{}
 
+// New renders a form for creating a new Message
 func (*MessagesController) New(w http.ResponseWriter, r *http.Request) {
 	room := r.Context().Value(ContextKeyRoom).(*models.Room)
 	responseData := map[string]interface{}{"Room": room}
 	render.HTML(w, http.StatusOK, "messages/new", responseData)
 }
 
+// Create creates a new Message
 func (*MessagesController) Create(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(1024)
 	if err != nil {
@@ -43,9 +46,10 @@ func (*MessagesController) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	pubsub.Broadcast(room.ID, content.Bytes())
+	pubsub.Publish(room.ID, content.Bytes())
 }
 
+// Socket opens a persistent WebSocket connection and subscribes it for updates to its room
 func (*MessagesController) Socket(w http.ResponseWriter, r *http.Request) {
 	ws, err := websocket.Accept(w, r, nil)
 	if err != nil {

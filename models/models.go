@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// DB is a connection to the Database
 var DB *gorm.DB
 
 func init() {
@@ -19,14 +20,18 @@ func init() {
 	}
 }
 
+// Migrate runs migrations for all models.
 func Migrate() error {
 	return DB.AutoMigrate(Room{}, Message{})
 }
 
+// IsRecordNotFound determines if an error was caused by a database transaction
+// returning no records
 func IsRecordNotFound(err error) bool {
 	return errors.Is(err, gorm.ErrRecordNotFound)
 }
 
+// Seed creates test records in the database
 func Seed() error {
 	var room Room
 	testRoomName := "Test Room"

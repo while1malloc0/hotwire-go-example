@@ -14,11 +14,16 @@ import (
 type contextKey struct{}
 
 var (
+	// ContextKeyRoom is a type safe representation of the key "room" inside of a context.Context
 	ContextKeyRoom = contextKey{}
 )
 
+// RoomsController implements Controller functionality for the Room model
 type RoomsController struct{}
 
+// Context is a middleware that parses the Room ID from a request, loads the
+// corresponding Room model, and makes it available as part of the request's
+// context
 func (*RoomsController) Context(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var room *models.Room
@@ -52,6 +57,7 @@ func roomFromIDString(idStr string) (*models.Room, error) {
 	return room, nil
 }
 
+// Index shows a list of all Rooms
 func (*RoomsController) Index(w http.ResponseWriter, r *http.Request) {
 	rooms, err := models.ListRooms()
 	if err != nil {
@@ -63,22 +69,26 @@ func (*RoomsController) Index(w http.ResponseWriter, r *http.Request) {
 	render.HTML(w, http.StatusOK, "rooms/index", responseData)
 }
 
+// New renders a form for creating a new Room
 func (*RoomsController) New(w http.ResponseWriter, r *http.Request) {
 	render.HTML(w, http.StatusOK, "rooms/new", nil)
 }
 
+// Edit renders a form for making changes to an existing Room
 func (*RoomsController) Edit(w http.ResponseWriter, r *http.Request) {
 	room := r.Context().Value(ContextKeyRoom).(*models.Room)
 	responseData := map[string]interface{}{"Room": room}
 	render.HTML(w, http.StatusOK, "rooms/edit", responseData)
 }
 
+// Get retrieves a single Room by its ID
 func (*RoomsController) Get(w http.ResponseWriter, r *http.Request) {
 	room := r.Context().Value(ContextKeyRoom).(*models.Room)
 	responseData := map[string]interface{}{"Room": room}
 	render.HTML(w, http.StatusOK, "rooms/show", responseData)
 }
 
+// Update makes changes to a Room given its ID
 func (*RoomsController) Update(w http.ResponseWriter, r *http.Request) {
 	room := r.Context().Value(ContextKeyRoom).(*models.Room)
 	err := r.ParseMultipartForm(1024)
@@ -100,6 +110,7 @@ func (*RoomsController) Update(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/rooms/%d", room.ID), http.StatusFound)
 }
 
+// Create makes a new Room
 func (*RoomsController) Create(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(1024)
 	if err != nil {
@@ -117,6 +128,7 @@ func (*RoomsController) Create(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/rooms", http.StatusFound)
 }
 
+// Destroy deletes an existing room
 func (*RoomsController) Destroy(w http.ResponseWriter, r *http.Request) {
 	room := r.Context().Value(ContextKeyRoom).(*models.Room)
 	err := models.DeleteRoom(room)

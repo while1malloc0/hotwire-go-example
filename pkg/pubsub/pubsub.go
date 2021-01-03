@@ -1,3 +1,6 @@
+// Package pubsub implements an in-memory publish/subscribe mechanism.
+//
+// Please don't use this in production.
 package pubsub
 
 import (
@@ -10,14 +13,20 @@ import (
 
 var subscriptions = make(map[uint]*Subscription)
 
+// Subscription represents a set of subscribers on a topic
 type Subscription struct {
-	ID    uint
-	C     chan []byte
+	// The ID of the subscription
+	ID uint
+	// The channel that can be used to publish new content to the topic
+	C chan []byte
+	// A list of websocket connections that are subscribed to the topic. Updates
+	// via the channel C will be fanned out to these
 	Conns []*websocket.Conn
 
 	listening bool
 }
 
+// Listen starts a Subscription listening for updates to publish to subscribers
 func (s *Subscription) Listen() {
 	if s.listening {
 		return
@@ -37,6 +46,7 @@ func (s *Subscription) Listen() {
 	}(s)
 }
 
+// Subscribe adds the given websocket as a subscriber to the topic denoted by id
 func Subscribe(id uint, conn *websocket.Conn) {
 	sub, ok := subscriptions[id]
 	if !ok {
@@ -48,7 +58,8 @@ func Subscribe(id uint, conn *websocket.Conn) {
 	sub.Conns = append(sub.Conns, conn)
 }
 
-func Broadcast(id uint, content []byte) error {
+// Publish publishes content to all subscribers of the topic denoted by id
+func Publish(id uint, content []byte) error {
 	sub, ok := subscriptions[id]
 	if !ok {
 		return errors.New("No one's listening")
